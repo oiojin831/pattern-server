@@ -18,7 +18,6 @@ export default async function (req, res) {
       'X-Naver-Client-Secret': process.env.X_NAVER_CLIENT_SECRET,
     }
   );
-  const response = await axios.request(options);
   const options2 = createOptions(
     SEARCH_BASE_URL,
     { query: req.query.goal },
@@ -27,13 +26,19 @@ export default async function (req, res) {
       'X-Naver-Client-Secret': process.env.X_NAVER_CLIENT_SECRET,
     }
   );
-  const response2 = await axios.request(options2);
-  const data = response.data.items[0];
-  const data2 = response2.data.items[0];
-  res.send({
-    startX: data.mapx,
-    startY: data.mapy,
-    goalX: data2.mapx,
-    goalY: data2.mapy,
-  });
+  try {
+    const response = await axios.request(options);
+    const response2 = await axios.request(options2);
+    const data = response.data.items[0];
+    const data2 = response2.data.items[0];
+    res.send({
+      startX: data.mapx,
+      startY: data.mapy,
+      goalX: data2.mapx,
+      goalY: data2.mapy,
+    });
+  } catch (error) {
+    console.log('errorororo', error);
+    res.send({ error });
+  }
 }
